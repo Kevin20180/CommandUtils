@@ -1,0 +1,40 @@
+{
+    "format_version": 2,
+    "header": {
+        "description": "by Kevin",
+        "name": "Command Utils",
+        "uuid": "5ca3cc6f-9ecd-4e9e-bdb5-40ef28e64b7b",
+        "version": [1, 0, 0],
+        "min_engine_version": [1, 26, 20]
+    },
+    "modules":
+    [
+        {
+            "description": "",
+            "type": "data",
+            "uuid": "8aef11a5-b653-4faa-b300-db8e6e13a7fa",
+            "version": [1, 0, 0]
+        },
+        {
+            "description": "",
+            "type": "script",
+            "language": "javascript",
+            "uuid": "276fb898-ac3c-405f-b223-78dfd06f84f3",
+            "version": [1, 0, 0],
+            "entry": "scripts/index.js"
+        }
+    ],
+    "capabilities": [
+        "script_eval"
+    ],
+    "dependencies": [
+        {
+            "module_name":"@minecraft/server",
+            "version":"2.1.0"
+        },
+        {
+            "module_name": "@minecraft/server-ui",
+            "version": "2.0.0"
+        }
+    ]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "mc-cmd-utils",
+  "version": "0.1.0-alpha",
+  "description": "An add-on that adds utility commands and gives more possibilities to system creators using commands.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && npm run bundle",
+    "bundle": "mcbundler build src/index.ts -o scripts/index.js",
+    "dev": "bash dev-scripts/dev.sh"
+  },
+  "keywords": [
+    "minecraft",
+    "bedrock",
+    "mc",
+    "mcpe",
+    "command",
+    "utils",
+    "cmd",
+    "utilities",
+    "utility",
+    "addon",
+    "script"
+  ],
+  "author": "Kevin",
+  "license": "MIT",
+  "dependencies": {
+    "@minecraft/server": "^2.3.0",
+    "@minecraft/server-ui": "^2.0.0",
+    "eventemitter3": "^5.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kevin20180/CommandUtils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Kevin20180/CommandUtils/issues"
+  },
+  "homepage": "https://github.com/Kevin20180/CommandUtils#readme"
+}

@@ -1,0 +1,6 @@
+node_modules/
+lib/
+dist/
+behavior_packs/CommandUtils/scripts/index.js
+.env
+package-lock.json
