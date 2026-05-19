@@ -91,8 +91,7 @@ export interface CommandOptions {
 export interface CommandParameterBase {
     name: string,
     type: CommandParameterType,
-    mandatory?: boolean,
-    enumName?: never
+    mandatory?: boolean
 }
 
 export interface CommandParameterEnum {
@@ -123,7 +122,8 @@ export interface CommandEnum {
 }
 
 function isParameterEnum(param: CommandParameter): param is CommandParameterEnum {
-    return Boolean(param.enumName);
+    if(typeof param !== "object") return false;
+    return "enumName" in param;
 }
 
 let commandRegisters: CommandRegister[] = [];

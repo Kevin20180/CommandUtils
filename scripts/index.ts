@@ -1,4 +1,2 @@
-export * from "./commandRegister";
+export * from "./commands";
 export * from "./utils";
-
-export * from "./newCommands";

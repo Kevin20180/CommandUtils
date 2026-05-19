@@ -7,31 +7,15 @@ import {
     getViewDirectionFromTo,
     getSourceFromOrigin,
     getBlockClusterLocations,
-    euclideanDistance
+    euclideanDistance,
 } from ".";
+import {
+    locationParam,
+    entitySelectorParam,
+    playerSelectorParam
+} from "./params";
 
 export const commandRegister = new CommandRegister("cmdutils", true, mc.CommandPermissionLevel.GameDirectors);
-
-// Parameters
-export const locationParam: CommandParameter = {
-    name: "location",
-    type: mc.CustomCommandParamType.Location,
-    mandatory: true
-}
-
-export const entitySelectorParam: CommandParameter = {
-    name: "targets",
-    type: mc.CustomCommandParamType.EntitySelector,
-    mandatory: true
-}
-
-export const playerSelectorParam: CommandParameter = {
-    name: "players",
-    type: mc.CustomCommandParamType.PlayerSelector,
-    mandatory: true
-}
-
-// Commands
 
 // command /explode
 commandRegister.registerCommand("explode", {
