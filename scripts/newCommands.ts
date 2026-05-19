@@ -1,7 +1,7 @@
 import * as mc from "@minecraft/server";
 import {
+    type CommandParameter,
     CommandRegister,
-    type CommandParameter, 
     getDimensionFromOrigin,
     isPlayer,
     getViewDirectionFromTo,
@@ -12,7 +12,7 @@ import {
 
 export const commandRegister = new CommandRegister("cmdutils", true, mc.CommandPermissionLevel.GameDirectors);
 
-// Parametros
+// Parameters
 export const locationParam: CommandParameter = {
     name: "location",
     type: mc.CustomCommandParamType.Location,
@@ -31,9 +31,9 @@ export const playerSelectorParam: CommandParameter = {
     mandatory: true
 }
 
-// Comandos
+// Commands
 
-// comando /explode
+// command /explode
 commandRegister.registerCommand("explode", {
     description: "Cria uma explosão.",
     parameters: [
@@ -60,7 +60,7 @@ commandRegister.registerCommand("explode", {
     return "Explosão criada com êxito.";
 })
 
-// comando /spreadentities
+// command /spreadentities
 commandRegister.registerCommand("spreadentities", {
     description: "Espalha entidades em uma área.",
     parameters: [
@@ -86,45 +86,7 @@ commandRegister.registerCommand("spreadentities", {
     return "Entidades espalhadas com êxito.";
 })
 
-// comando /nametag
-/*let nameTagOptions = ["query", "set"];
-commandRegister.registerEnum("name_tag_option", nameTagOptions);
-
-commandRegister.registerCommand("nametag", {
-    description: "Gerencia name tag de entidades.",
-    parameters: [
-        { enumName: "name_tag_option", mandatory: true },
-        entitySelectorParam,
-        { name: "name_tag", type: mc.CustomCommandParamType.String }
-    ]
-}, (_, option: string, entities: mc.Entity[], nameTag?: string) => {
-    switch(option) {
-        case "query":
-            let message = "";
-            
-            for(const entity of entities) {
-                message += entity.nameTag + "§r§f, ";
-            }
-            
-            message = message.slice(0, -2);
-            return message;
-            break;
-        case "set":
-            if(!nameTag) return true;
-            
-            mc.system.run(() => {
-                for(const entity of entities) {
-                    try { entity.nameTag = nameTag }
-                    catch {}
-                }
-            })
-            break;
-        default:
-            return { status: mc.CustomCommandStatus.Failure, message: "Opção inválida: " + option }
-    }
-})*/
-
-// comando /setnametag
+// command /setnametag
 commandRegister.registerCommand("setnametag", {
     description: "Define uma name tag para entidades.",
     parameters: [
@@ -145,7 +107,7 @@ commandRegister.registerCommand("setnametag", {
     return "Name tag definida com êxito.";
 })
 
-// comando /setselectedslot
+// command /setselectedslot
 commandRegister.registerCommand("setselectedslot", {
     description: "Define o slot selecionado na hotbar de jogadores.",
     parameters: [
@@ -166,7 +128,7 @@ commandRegister.registerCommand("setselectedslot", {
     return "Índice do slot selecionado atualizado com sucesso.";
 })
 
-// comando /knockback
+// command /knockback
 commandRegister.registerCommand("knockback", {
     description: "Aplica uma repulsão em entidades.",
     parameters: [
@@ -193,7 +155,7 @@ commandRegister.registerCommand("knockback", {
     return "Repulsão aplicada com sucesso.";
 })
 
-// comando /setonfire
+// command /setonfire
 commandRegister.registerCommand("setonfire", {
     description: "Incendiar entidades.",
     parameters: [
@@ -211,7 +173,7 @@ commandRegister.registerCommand("setonfire", {
     return "Entidades incendiadas com sucesso."
 })
 
-// comando /extinguishfire
+// command /extinguishfire
 commandRegister.registerCommand("extinguishfire", {
     description: "Apaga fogo de entidades.",
     parameters: [
@@ -231,7 +193,7 @@ commandRegister.registerCommand("extinguishfire", {
     return "Fogo apagado com sucesso.";
 })
 
-// comando /showparticle
+// command /showparticle
 commandRegister.registerCommand("spawnparticle", {
     description: "Gera partículas vistas apenas aos jogadores especificados.",
     parameters: [
@@ -257,7 +219,7 @@ commandRegister.registerCommand("spawnparticle", {
     return "Partícula gerada com sucesso.";
 })
 
-// comando /tame
+// command /tame
 commandRegister.registerCommand("tame", {
     description: "Domar entidades.",
     parameters: [ entitySelectorParam ]
@@ -298,7 +260,7 @@ commandRegister.registerCommand("tame", {
     return "Entidades domadas com sucesso.";
 })
 
-// comando /removeentity
+// command /removeentity
 commandRegister.registerCommand("removeentity", {
     description: "Remove entidades.",
     parameters: [ entitySelectorParam ]
@@ -331,7 +293,7 @@ commandRegister.registerCommand("removeentity", {
     return entities.length + " entidades removidas.";
 })
 
-// comando /fillcluster
+// commandd /fillcluster
 commandRegister.registerCommand("fillcluster", {
     description: "Preenche um aglomerado de blocos por um bloco específico.",
     parameters: [
@@ -375,7 +337,7 @@ commandRegister.registerCommand("fillcluster", {
     return blockLocations.size + " blocos preenchidos.";
 })
 
-// comando /sethealth
+// command /sethealth
 commandRegister.registerCommand("sethealth", {
     description: "Definir vida de entidades.",
     parameters: [
@@ -413,7 +375,7 @@ commandRegister.registerCommand("sethealth", {
     return "Vida definida.";
 })
 
-// comando /leash
+// command /leash
 commandRegister.registerCommand("leash", {
     description: "Laça entidades em uma entidade.",
     parameters: [
@@ -458,7 +420,7 @@ commandRegister.registerCommand("leash", {
     return "Entidades laçadas.";
 })
 
-// comando /unleash
+// command /unleash
 commandRegister.registerCommand("unleash", {
     description: "Remove laço de entidades.",
     parameters: [ entitySelectorParam ]
