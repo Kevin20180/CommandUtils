@@ -1,4 +1,4 @@
-export * from "./commandRegister.js";
-export * from "./utils.js";
+export * from "./commandRegister";
+export * from "./utils";
 
-export * from "./newCommands.js";
+export * from "./newCommands";

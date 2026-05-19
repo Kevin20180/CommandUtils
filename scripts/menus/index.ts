@@ -1,2 +1,2 @@
 export * from "./menuBuilder.js";
-export * from "../utils.js";
+export * from "../utils";
