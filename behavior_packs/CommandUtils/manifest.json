@@ -4,7 +4,7 @@
         "description": "Este é um addon que adiciona vários comandos que podem ajudar criadores.\n\nContribua no desenvolvimento do addon em https://github.com/Kevin20180/CommandUtils",
         "name": "Command Utils",
         "uuid": "17d6da3e-7684-49b8-a142-291edde5bcdd",
-        "version": [1, 0, 0],
+        "version": [0, 1, 0],
         "min_engine_version": [1, 21, 120]
     },
     "modules":
@@ -13,14 +13,14 @@
             "description": "",
             "type": "data",
             "uuid": "6b183054-a86d-42a5-9ac4-92a1785e163e",
-            "version": [1, 0, 0]
+            "version": [0, 1, 0]
         },
         {
             "description": "",
             "type": "script",
             "language": "javascript",
             "uuid": "8c4544df-2cd3-43e4-9504-e2c6cf6df960",
-            "version": [1, 0, 0],
+            "version": [0, 1, 0],
             "entry": "scripts/index.js"
         }
     ],
