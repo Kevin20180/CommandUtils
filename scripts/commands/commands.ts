@@ -3,11 +3,16 @@ import {
     type CommandParameter,
     CommandRegister,
     getDimensionFromOrigin,
-    isPlayer,
     getViewDirectionFromTo,
     getSourceFromOrigin,
     getBlockClusterLocations,
     euclideanDistance,
+
+    isEntity,
+    isPlayer,
+    isVector3,
+    
+    error
 } from ".";
 import {
     locationParam,
@@ -27,14 +32,17 @@ commandRegister.registerCommand("explode", {
         { name: "causes_fire", type: "Boolean", }
     ]
 }, (origin, location: mc.Vector3, radius?: number, breaksBlocks?: boolean, causesFire?: boolean) => {
+    if(!isVector3(location)) return error("Invalid 'location' param.");
+    if(radius != undefined && typeof radius !== "number") return error("Invalid 'radius' param.");
+    
     radius = radius ?? 1;
     if(radius < 0 || radius > 1000) {
-        return { status: "Failure", message: "Raio deve ser ou estar entre 0 e 1000." }
+        return error("Raio deve ser ou estar entre 0 e 1000.");
     }
     const dimension = getDimensionFromOrigin(origin);
     
     if(!dimension.isChunkLoaded(location)) {
-        return { status: "Failure", message: "Impossível explodir fora do mundo." }
+        return error("Impossível criar explosão fora do mundo.");
     }
     
     mc.system.run(() => {
@@ -54,15 +62,23 @@ commandRegister.registerCommand("spreadentities", {
         { name: "vertical_radius", type: "Integer" }
     ]
 }, (origin, entities: mc.Entity[], location: mc.Vector3, horizontalRadius: number, verticalRadius?: number) => {
+    if(!Array.isArray(entities)) return error("Invalid 'entities' param.");
+    if(!isVector3(location)) return error("Invalid 'location' param.");
+    if(typeof horizontalRadius !== "number") return error("Invalid 'horizontalRadius' param.");
+    if(verticalRadius != undefined && typeof verticalRadius !== "number") return error("Invalid 'verticalRadius' param.");
+
     const dimension = getDimensionFromOrigin(origin);
     
     mc.system.run(() => {
         for(const entity of entities) {
+            if(!isEntity(entity)) continue;
+
             const rloc = {
                 x: location.x + Math.random() * (horizontalRadius * 2) - horizontalRadius,
                 y: location.y + Math.random() * (verticalRadius ?? 1),
                 z: location.z + Math.random() * (horizontalRadius * 2) - horizontalRadius,
             }
+
             entity.teleport(rloc, { dimension });
         }
     })
@@ -78,8 +94,13 @@ commandRegister.registerCommand("setnametag", {
         { name: "name_tag", type: "String", mandatory: true }
     ]
 }, (_, entities: mc.Entity[], nameTag?: string) => {
+    if(!Array.isArray(entities)) return error("Invalid 'entities' param.");
+    if(nameTag != undefined && typeof nameTag !== "string") return error("Invalid 'nameTag' param.");
+    
     mc.system.run(() => {
         for(const entity of entities) {
+            if(!isEntity(entity)) continue;
+
             let name = nameTag
              ?? (isPlayer(entity) ? entity.name : "")
             
@@ -99,12 +120,16 @@ commandRegister.registerCommand("setselectedslot", {
         { name: "slot_index", type: "Integer" }
     ]
 }, (_, players: mc.Player[], slotIndex: number) => {
+    if(!Array.isArray(players)) return error("Invalid 'players' param.");
+    if(typeof slotIndex !== "number") return error("Invalid 'slotIndex' param.");
+    
     if(slotIndex < 0 || slotIndex > 8) {
         return { status: "Failure", message: "Índice do slot deve ser ou estar entre 0 e 8." }
     }
     
     mc.system.run(() => {
         for(const player of players) {
+            if(!isPlayer(player)) continue;
             player.selectedSlotIndex = slotIndex;
         }
     })
@@ -121,8 +146,14 @@ commandRegister.registerCommand("knockback", {
         { ...locationParam, mandatory: false }
     ]
 }, (_, entities: mc.Entity[], force: mc.Vector3, location?: mc.Vector3) => {
+    if(!Array.isArray(entities)) return error("Invalid 'entities' param.");
+    if(!isVector3(force)) return error("Invalid 'force' param.");
+    if(location != undefined && !isVector3(location)) return error("Invalid 'location' param.");
+    
     mc.system.run(() => {
         for(const entity of entities) {
+            if(!isEntity(entity)) continue;
+            
             if(!location) {
                 entity.applyImpulse(force);
             } else {
@@ -148,8 +179,12 @@ commandRegister.registerCommand("setonfire", {
         { name: "use_effects", type: "Boolean" }
     ]
 }, (_, entities: mc.Entity[], seconds: number, useEffects?: boolean) => {
+    if(!Array.isArray(entities)) return error("Invalid 'entities' param.");
+    if(typeof seconds !== "number") return error("Invalid 'seconds' param.");
+    
     mc.system.run(() => {
         for(const entity of entities) {
+            if(!isEntity(entity)) continue;
             entity.setOnFire(seconds, useEffects);
         }
     })
@@ -165,8 +200,11 @@ commandRegister.registerCommand("extinguishfire", {
         { name: "use_effects", type: "Boolean" }
     ]
 }, (_, entities: mc.Entity[], useEffects?: boolean) => {
+    if(!Array.isArray(entities)) return error("Invalid 'entities' param.");
+    
     mc.system.run(() => {
         for(const entity of entities) {
+            if(!isEntity(entity)) continue;
             entity.extinguishFire(useEffects);
         }
     })
@@ -186,6 +224,10 @@ commandRegister.registerCommand("spawnparticle", {
         { ...locationParam, mandatory: false }
     ]
 }, (origin, players: mc.Player[], particleId: string, location?: mc.Vector3) => {
+    if(!Array.isArray(players)) return error("Invalid 'players' param.");
+    if(typeof particleId !== "string") return error("Invalid 'particle_id' param.");
+    if(location != undefined && !isVector3(location)) return error("Invalid 'location' param.");
+    
     if(!location) {
         const source = getSourceFromOrigin(origin);
         location = source ? source.location : { x: 0, y: 0, z: 0 }
@@ -193,6 +235,7 @@ commandRegister.registerCommand("spawnparticle", {
     
     mc.system.run(() => {
         for(const player of players) {
+            if(!isPlayer(player)) continue;
             player.spawnParticle(particleId, location);
         }
     })
@@ -208,6 +251,8 @@ commandRegister.registerCommand("tame", {
     description: "Domar entidades.",
     parameters: [ entitySelectorParam ]
 }, (origin, entities: mc.Entity[]) => {
+    if(!Array.isArray(entities)) return error("Invalid 'entities' param.");
+    
     const source = getSourceFromOrigin(origin);
     if(!(source instanceof mc.Player)) {
         return { status: "Failure", message: "Este comando só pode ser executado por um jogador." }
@@ -215,6 +260,8 @@ commandRegister.registerCommand("tame", {
     
     let availableTameComps: (mc.EntityTameMountComponent | mc.EntityTameableComponent)[] = [];
     for(const entity of entities) {
+        if(!isEntity(entity)) continue;
+        
         const tameableComp =
             entity.getComponent("minecraft:tamemount") ??
             entity.getComponent("minecraft:tameable");
@@ -249,14 +296,17 @@ commandRegister.registerCommand("removeentity", {
     description: "Remove entidades.",
     parameters: [ entitySelectorParam ]
 }, (origin, entities: mc.Entity[]) => {
-    entities = entities.filter(e => e);
+    if(!Array.isArray(entities)) return error("Invalid 'entities' param.");
+    
     const source = getSourceFromOrigin(origin);
     if(source instanceof mc.Player) {
         let message = "";
         
         for(const entity of entities) {
+            if(!isEntity(entity)) continue;
             message += `%${entity.localizationKey}§r, `;
         }
+        
         message = message.slice(0, -2);
         message += " removido(a).";
         
@@ -265,6 +315,8 @@ commandRegister.registerCommand("removeentity", {
     
     mc.system.run(() => {
         for(const entity of entities) {
+            if(!isEntity(entity)) continue;
+            
             try {
                 entity.typeId != "minecraft:player"
                   ? entity.remove()
@@ -285,6 +337,9 @@ commandRegister.registerCommand("fillcluster", {
         { name: "block", type: "BlockType", mandatory: true }
     ]
 }, (origin, location: mc.Vector3, blockType: mc.BlockType) => {
+    if(!isVector3(location)) return error("Invalid 'location' param.");
+    if(!(blockType instanceof mc.BlockType)) return error("Invalid 'block' param.");
+    
     const dimension = getDimensionFromOrigin(origin);
     const block: mc.Block | undefined = (() => {
         try { return dimension.getBlock(location) }
@@ -298,24 +353,19 @@ commandRegister.registerCommand("fillcluster", {
         return { status: "Failure", message: "Blocos alvos não podem ser ar." }
     }
     
-    let ms = Date.now();
     const blockLocations = getBlockClusterLocations([block.typeId], dimension, location);
-    mc.world.sendMessage(`Blocos obtidos em ${Date.now() - ms} ms`);
-    ms = Date.now();
+    
     for(const loc of blockLocations) {
         if(!dimension.isChunkLoaded(loc)) {
             return { status: "Failure", message: "%commands.fill.outOfWorld" }
         }
     }
-    mc.world.sendMessage(`Verificado em ${Date.now() - ms} ms`);
     
     mc.system.run(() => {
-        ms = Date.now();
         const blockPermutation = mc.BlockPermutation.resolve(blockType.id);
         for(const loc of blockLocations) {
             dimension.setBlockPermutation(loc, blockPermutation);
         }
-        mc.world.sendMessage(`Preenchido em ${Date.now() - ms} ms`);
     })
     
     return blockLocations.size + " blocos preenchidos.";
@@ -329,6 +379,9 @@ commandRegister.registerCommand("sethealth", {
         { name: "health", type: "Integer", mandatory: true }
     ]
 }, (origin, entities: mc.Entity[], health: number) => {
+    if(!Array.isArray(entities)) return error("Invalid 'entities' param.");
+    if(typeof health !== "number") return error("Invalid 'health' param.");
+    
     let availableHealthComps: mc.EntityHealthComponent[] = [];
     
     for(const entity of entities) {
@@ -367,19 +420,27 @@ commandRegister.registerCommand("leash", {
         { ...entitySelectorParam, name: "source" }
     ]
 }, (_, targets: mc.Entity[], sources: mc.Entity[]) => {
+    if(!Array.isArray(targets)) return error("Invalid 'targets' param.");
+    if(!Array.isArray(sources)) return error("Invalid 'source' param.");
+    
     if(sources.length > 1) {
-        return { status: "Failure", message: "Apenas uma entidade de origem deve ser selecionada." }
+        return error("Apenas uma entidade de origem deve ser selecionada.");
     }
     
     const source = sources[0];
     if(!source) {
-        return { status: "Failure", message: "Deve ter pelo menos uma entidade origem." }
+        return error("Deve ter pelo menos uma entidade origem.");
+    }
+    if(sources.length > 1) {
+        return error("Deve ter apenas uma entidade origem.");
     }
     
     const sourceLocation = source.location;
     const leashableComps: mc.EntityLeashableComponent[] = [];
     
     for(const entity of targets) {
+        if(!isEntity(entity)) continue;
+        
         const leashableComp = entity.getComponent("minecraft:leashable");
         if(!leashableComp) continue;
         
@@ -399,7 +460,7 @@ commandRegister.registerCommand("leash", {
         return `${leashableComps.length} entidades laçadas e ${targets.length - leashableComps.length} não puderam ser laçadas.`;
     }
     else if(targets.length == 0) {
-        return { status: "Failure", message: "Nenhuma entidade laçada." }
+        return error("Nenhuma entidade laçada.");
     }
     return "Entidades laçadas.";
 })
@@ -409,9 +470,13 @@ commandRegister.registerCommand("unleash", {
     description: "Remove laço de entidades.",
     parameters: [ entitySelectorParam ]
 }, (_, entities: mc.Entity[]) => {
+    if(!Array.isArray(entities)) return error("Invalid 'entities' param.");
+    
     const leashableComps: mc.EntityLeashableComponent[] = [];
     
     for(const entity of entities) {
+        if(!isEntity(entity)) continue;
+        
         const leashableComp = entity.getComponent("minecraft:leashable");
         if(!leashableComp) continue;
         
@@ -428,7 +493,7 @@ commandRegister.registerCommand("unleash", {
         return `${leashableComps.length} entidades deslaçadas e ${entities.length - leashableComps.length} não puderam ser deslaçadas.`;
     }
     else if(entities.length == 0) {
-        return { status: "Failure", message: "Nenhuma entidade deslaçada." }
+        return error("Nenhuma entidade deslaçada.");
     }
     return "Laço removido.";
 })
