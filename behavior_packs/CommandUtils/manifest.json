@@ -1,7 +1,7 @@
 {
     "format_version": 2,
     "header": {
-        "description": "by Kevin",
+        "description": "Este é um addon que adiciona vários comandos que podem ajudar criadores.\n\nContribua no desenvolvimento do addon em https://github.com/Kevin20180/CommandUtils",
         "name": "Command Utils",
         "uuid": "17d6da3e-7684-49b8-a142-291edde5bcdd",
         "version": [1, 0, 0],
