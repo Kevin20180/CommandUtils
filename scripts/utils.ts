@@ -128,3 +128,103 @@ export function isVector3(object: any): object is mc.Vector3 {
 export function error(message: string): CommandResult {
     return { status: "Failure", message }
 }
+
+export function formatedDateString(): string {
+    const date = new Date();
+    
+    let h = date.getHours().toString();
+    let m = date.getMinutes().toString();
+    let s = date.getSeconds().toString();
+    let ms = date.getMilliseconds().toString();
+    
+    if(h.length < 2) h = "0" + h;
+    if(m.length < 2) m = "0" + m;
+    if(s.length < 2) s = "0" + s;
+    
+    if(ms.length < 3) ms = "0" + ms;
+    if(ms.length < 3) ms = "0" + ms;
+    
+    return `${h}:${m}:${s}.${ms}`;
+}
+
+export function toString(value: any): string {
+    let msg = "";
+    
+    switch(typeof (value)) {
+        case "boolean":
+            msg = `§c${value}§r§f`;
+            break;
+        case "number":
+            msg = `§9${value}§r§f`;
+            break;
+        case "string":
+            msg = `§a"${value}§r§a"§r§f`
+            break;
+        case "object":
+            if(value instanceof Error) {
+                msg = `§c${value}§r§f`;
+                break;
+            }
+            let txtOpen = !Array.isArray(value) ? "{" : "[";
+            let txtClose = !Array.isArray(value) ? "}" : "]";
+            msg = `§5${txtOpen}§f\n${propertiesToString(value, 4, 1)}§5${txtClose}§f`;
+            break;
+        case "undefined":
+            msg = `§7undefined§r`;
+            break;
+        default:
+            msg = `§f${value}§r§f`;
+    }
+    
+    return msg;
+}
+
+export function propertiesToString(object: Record<string, any>, indent: number = 4, bracketColorType: number = 0, objects: Set<object> = new Set()): string {
+    let msg = "";
+    let spaces = "";
+    for(let i=0; i<indent; i++) spaces += " ";
+    
+    let properties: string[] = Object.getOwnPropertyNames(object);
+    if(Array.isArray(object)) properties = properties.filter((p) => !["length"].includes(p));
+    
+    for(let i=0; i < properties.length; i++) {
+        const prop = properties[i] as any;
+        const propData = object[prop];
+        
+        let comma = properties[i+1] ? "§r§f," : "";
+        if(bracketColorType > 3) bracketColorType = 0;
+        
+        let propTxt = (typeof object == "object" && !Array.isArray(object))
+          ? `§e${prop}§r§f: `
+          : "";
+        
+        if(["boolean", "number", "string", "undefined"].includes(typeof propData) || typeof propData != "object") {
+            msg += `${spaces}${propTxt}${toString(propData)}${comma}\n`;
+        }
+        else if(Array.isArray(propData)) {
+            if(objects.has(propData)) {
+                msg += `${spaces}${propTxt}§b<Circular []>\n`;
+                continue;
+            }
+            
+            if(prop != "length") {
+                objects.add(propData);
+                
+                let bracketColor = ["§5", "§9", "§g", "§a"][bracketColorType];
+                msg += `${spaces}${propTxt}${bracketColor}[§f\n${propertiesToString(propData, indent+4, bracketColorType+1, objects)}${spaces}${bracketColor}]${comma}\n`;
+            }
+        }
+        else {
+            if(objects.has(propData)) {
+                msg += `${spaces}${propTxt}§b<Circular ${propData.constructor?.name || propData.name || "anonymous"}>\n`;
+                continue;
+            }
+            
+            objects.add(propData);
+            
+            let bracketColor = ["§5", "§9", "§g", "§a"][bracketColorType];
+            msg += `${spaces}§e${propTxt}${bracketColor}{§f\n${propertiesToString(propData, indent+4, bracketColorType+1, objects)}${spaces}${bracketColor}}${comma}\n`;
+        }
+    }// catch {}
+    return msg;
+}
