@@ -6,7 +6,14 @@ mc.world.afterEvents.worldLoad.subscribe(() => {
     overworld = mc.world.getDimension("overworld");
 })
 
-export function getSourceFromOrigin(origin: mc.CustomCommandOrigin): mc.Entity | mc.Block | undefined {
+export function getSourceFromOrigin(
+    origin?: {
+        initiator?: mc.Entity,
+        sourceEntity?: mc.Entity,
+        sourceBlock?: mc.Block
+    }
+): mc.Entity | mc.Block | undefined {
+    if(!origin) return;
     return origin.initiator ?? origin.sourceEntity ?? origin.sourceBlock;
 }
 
