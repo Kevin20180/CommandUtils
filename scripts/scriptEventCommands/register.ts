@@ -77,16 +77,3 @@ mc.system.afterEvents.scriptEventReceive.subscribe((event) => {
         sourceType
     })
 })
-
-scriptEventManager.register('cmdutils:help', (event) => {
-    const { sourcePlayer: player } = event;
-    if(!player) return;
-    
-    let message = "Script event disponíveis:\n";
-
-    for(let cmd of scriptEventManager.getScriptEvents()) {
-        message += "§a" + cmd.id + "\n";
-    }
-
-    player.sendMessage(message);
-})
