@@ -43,6 +43,7 @@ export class ScriptEventCommand extends EventEmitter<ScriptEventEvents> {
 export interface ScriptCommandEvent {
     message: string,
     source?: mc.Entity | mc.Block,
+    sourcePlayer?: mc.Player,
     sourceEntity?: mc.Entity,
     sourceBlock?: mc.Block,
     initiator?: mc.Entity,
@@ -69,6 +70,7 @@ mc.system.afterEvents.scriptEventReceive.subscribe((event) => {
     scriptEvent.emit("run", {
         message,
         source,
+        sourcePlayer: isPlayer(source) ? source : undefined,
         sourceEntity,
         sourceBlock,
         initiator,
@@ -76,10 +78,10 @@ mc.system.afterEvents.scriptEventReceive.subscribe((event) => {
     })
 })
 
-scriptEventManager.register('cmdutils:help', ({ source }) => {
-    if(!isPlayer(source)) return;
-    const player = source;
-
+scriptEventManager.register('cmdutils:help', (event) => {
+    const { sourcePlayer: player } = event;
+    if(!player) return;
+    
     let message = "Script event disponíveis:\n";
 
     for(let cmd of scriptEventManager.getScriptEvents()) {
