@@ -7,7 +7,6 @@ export class MenuCreator {
 
 		let cachedData = cacheManager.get(id);
 		if(cachedData) {
-			console.log('usou dados em cache');
 			if(cachedData.data?.error) throw cachedData.data.error
 			else if(cachedData.data?.menu) return cachedData.data?.menu;
 		}
