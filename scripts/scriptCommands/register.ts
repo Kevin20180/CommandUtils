@@ -10,11 +10,15 @@ export class ScriptCommandManager extends EventEmitter {
         this._scriptCommandsById = new Map();
     }
 
-    register(id: string, onRun?: (event: ScriptCommandEvent) => void): ScriptCommand {
+    register(
+        id: string,
+        onRun?: (event: ScriptCommandEvent) => void,
+        description?: string
+    ): ScriptCommand {
         let scriptCommand = this._scriptCommandsById.get(id);
         if(scriptCommand) return scriptCommand;
 
-        scriptCommand = new ScriptCommand(id);
+        scriptCommand = new ScriptCommand(id, description);
         this._scriptCommandsById.set(id, scriptCommand);
 
         if(onRun) scriptCommand.on('run', onRun);
@@ -33,10 +37,12 @@ export class ScriptCommandManager extends EventEmitter {
 
 export class ScriptCommand extends EventEmitter<ScriptCommandEvents> {
     readonly id: string;
+    description: string | undefined;
 
-    constructor(id: string) {
+    constructor(id: string, description?: string) {
         super();
         this.id = id;
+        this.description = description;
     }
 }
 
