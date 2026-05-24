@@ -1,5 +1,5 @@
 import * as mc from "@minecraft/server";
-import { scriptEventManager } from ".";
+import { scriptCommandManager } from ".";
 import { toString } from "../utils";
 import { ActionMenu } from "../menus";
 
@@ -10,20 +10,20 @@ export interface ActionMenuData {
     on_open?: string[]
 }
 
-scriptEventManager.register('cmdutils:help', (event) => {
+scriptCommandManager.register('cmdutils:help', (event) => {
     const { sourcePlayer: player } = event;
     if(!player) return;
     
     let message = "Script event disponíveis:\n";
 
-    for(let cmd of scriptEventManager.getScriptEvents()) {
+    for(let cmd of scriptCommandManager.getScriptEvents()) {
         message += "§a" + cmd.id + "\n";
     }
 
     player.sendMessage(message);
 })
 
-scriptEventManager.register("cmdutils:run_script", (event) => {
+scriptCommandManager.register("cmdutils:run_script", (event) => {
     const { sourcePlayer: player, message } = event;
     
     try {
@@ -34,7 +34,7 @@ scriptEventManager.register("cmdutils:run_script", (event) => {
     }
 })
 
-scriptEventManager.register("cmdutils:open_action_menu", (event) => {
+scriptCommandManager.register("cmdutils:open_action_menu", (event) => {
     const { sourcePlayer: player, message } = event;
     if(!player) return;
 
@@ -85,3 +85,4 @@ scriptEventManager.register("cmdutils:open_action_menu", (event) => {
     
     menu.open(player);
 })
+

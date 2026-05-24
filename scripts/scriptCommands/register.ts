@@ -54,14 +54,14 @@ export type ScriptCommandEvents = {
     run: (event: ScriptCommandEvent) => void
 }
 
-export const scriptEventManager = new ScriptCommandManager();
+export const scriptCommandManager = new ScriptCommandManager();
 
 mc.system.afterEvents.scriptEventReceive.subscribe((event) => {
     const { id, message, sourceEntity, sourceBlock, initiator, sourceType } = event;
 
     const source = getSourceFromOrigin(event);
 
-    const scriptEvent = scriptEventManager.getScriptEvent(id);
+    const scriptEvent = scriptCommandManager.getScriptEvent(id);
     if(!scriptEvent) {
         if(!isPlayer(source)) return;
         return source.sendMessage(`§cScript event '${id}' inexistente.`);
