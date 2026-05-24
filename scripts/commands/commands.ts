@@ -72,6 +72,7 @@ commandRegister.registerCommand("spreadentities", {
     mc.system.run(() => {
         for(const entity of entities) {
             if(!isEntity(entity)) continue;
+            if(!entity.isValid) continue;
 
             const rloc = {
                 x: location.x + Math.random() * (horizontalRadius * 2) - horizontalRadius,
@@ -100,6 +101,7 @@ commandRegister.registerCommand("setnametag", {
     mc.system.run(() => {
         for(const entity of entities) {
             if(!isEntity(entity)) continue;
+            if(!entity.isValid) continue;
 
             let name = nameTag
              ?? (isPlayer(entity) ? entity.name : "")
@@ -130,6 +132,8 @@ commandRegister.registerCommand("setselectedslot", {
     mc.system.run(() => {
         for(const player of players) {
             if(!isPlayer(player)) continue;
+            if(!player.isValid) continue;
+
             player.selectedSlotIndex = slotIndex;
         }
     })
@@ -153,6 +157,7 @@ commandRegister.registerCommand("knockback", {
     mc.system.run(() => {
         for(const entity of entities) {
             if(!isEntity(entity)) continue;
+            if(!entity.isValid) continue;
             
             if(!location) {
                 entity.applyImpulse(force);
@@ -185,6 +190,8 @@ commandRegister.registerCommand("setonfire", {
     mc.system.run(() => {
         for(const entity of entities) {
             if(!isEntity(entity)) continue;
+            if(!entity.isValid) continue;
+
             entity.setOnFire(seconds, useEffects);
         }
     })
@@ -205,6 +212,8 @@ commandRegister.registerCommand("extinguishfire", {
     mc.system.run(() => {
         for(const entity of entities) {
             if(!isEntity(entity)) continue;
+            if(!entity.isValid) continue;
+
             entity.extinguishFire(useEffects);
         }
     })
@@ -236,6 +245,8 @@ commandRegister.registerCommand("spawnparticle", {
     mc.system.run(() => {
         for(const player of players) {
             if(!isPlayer(player)) continue;
+            if(!player.isValid) continue;
+
             player.spawnParticle(particleId, location);
         }
     })
@@ -261,6 +272,7 @@ commandRegister.registerCommand("tame", {
     let availableTameComps: (mc.EntityTameMountComponent | mc.EntityTameableComponent)[] = [];
     for(const entity of entities) {
         if(!isEntity(entity)) continue;
+        if(!entity.isValid) continue;
         
         const tameableComp =
             entity.getComponent("minecraft:tamemount") ??
@@ -275,6 +287,8 @@ commandRegister.registerCommand("tame", {
     
     mc.system.run(() => {
         for(const tameableComp of availableTameComps) {
+            if(!tameableComp.isValid) continue;
+
             // domar entidade
             if(tameableComp instanceof mc.EntityTameMountComponent) {
                 tameableComp.tameToPlayer(true, source);
@@ -304,6 +318,8 @@ commandRegister.registerCommand("removeentity", {
         
         for(const entity of entities) {
             if(!isEntity(entity)) continue;
+            if(!entity.isValid) continue;
+
             message += `%${entity.localizationKey}§r, `;
         }
         
@@ -316,6 +332,7 @@ commandRegister.registerCommand("removeentity", {
     mc.system.run(() => {
         for(const entity of entities) {
             if(!isEntity(entity)) continue;
+            if(!entity.isValid) continue;
             
             try {
                 entity.typeId != "minecraft:player"
@@ -385,6 +402,9 @@ commandRegister.registerCommand("sethealth", {
     let availableHealthComps: mc.EntityHealthComponent[] = [];
     
     for(const entity of entities) {
+        if(!isEntity(entity)) continue;
+        if(!entity.isValid) continue;
+
         const healthComp = entity.getComponent("minecraft:health");
         if(!healthComp) continue;
         
@@ -393,6 +413,8 @@ commandRegister.registerCommand("sethealth", {
     
     mc.system.run(() => {
         for(const healthComp of availableHealthComps) {
+            if(!healthComp.isValid) continue;
+
             // definir vida
             if(health < healthComp.effectiveMin) health = healthComp.effectiveMin
             else if(health > healthComp.effectiveMax) health = healthComp.effectiveMax;
@@ -440,6 +462,7 @@ commandRegister.registerCommand("leash", {
     
     for(const entity of targets) {
         if(!isEntity(entity)) continue;
+        if(!entity.isValid) continue;
         
         const leashableComp = entity.getComponent("minecraft:leashable");
         if(!leashableComp) continue;
@@ -452,6 +475,7 @@ commandRegister.registerCommand("leash", {
     
     mc.system.run(() => {
         for(const leashableComp of leashableComps) {
+            if(!leashableComp.isValid) continue;
             leashableComp.leashTo(source);
         }
     })
@@ -476,6 +500,7 @@ commandRegister.registerCommand("unleash", {
     
     for(const entity of entities) {
         if(!isEntity(entity)) continue;
+        if(!entity.isValid) continue;
         
         const leashableComp = entity.getComponent("minecraft:leashable");
         if(!leashableComp) continue;
@@ -485,6 +510,7 @@ commandRegister.registerCommand("unleash", {
     
     mc.system.run(() => {
         for(const leashableComp of leashableComps) {
+            if(!leashableComp.isValid) continue;
             leashableComp.unleash();
         }
     })
