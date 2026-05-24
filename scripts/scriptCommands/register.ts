@@ -2,36 +2,36 @@ import * as mc from "@minecraft/server";
 import EventEmitter from "eventemitter3";
 import { getSourceFromOrigin, isPlayer } from "../utils";
 
-export class ScriptEventManager extends EventEmitter {
-    _scriptEventsById: Map<string, ScriptEventCommand>;
+export class ScriptCommandManager extends EventEmitter {
+    _scriptCommandsById: Map<string, ScriptCommand>;
     
     constructor() {
         super();
-        this._scriptEventsById = new Map();
+        this._scriptCommandsById = new Map();
     }
 
-    register(id: string, onRun?: (event: ScriptCommandEvent) => void): ScriptEventCommand {
-        let scriptEvent = this._scriptEventsById.get(id);
-        if(scriptEvent) return scriptEvent;
+    register(id: string, onRun?: (event: ScriptCommandEvent) => void): ScriptCommand {
+        let scriptCommand = this._scriptCommandsById.get(id);
+        if(scriptCommand) return scriptCommand;
 
-        scriptEvent = new ScriptEventCommand(id);
-        this._scriptEventsById.set(id, scriptEvent);
+        scriptCommand = new ScriptCommand(id);
+        this._scriptCommandsById.set(id, scriptCommand);
 
-        if(onRun) scriptEvent.on('run', onRun);
+        if(onRun) scriptCommand.on('run', onRun);
 
-        return scriptEvent;
+        return scriptCommand;
     }
 
-    getScriptEvent(id: string): ScriptEventCommand | undefined {
-        return this._scriptEventsById.get(id);
+    getScriptEvent(id: string): ScriptCommand | undefined {
+        return this._scriptCommandsById.get(id);
     }
 
-    getScriptEvents(): ScriptEventCommand[] {
-        return [...this._scriptEventsById.values()];
+    getScriptEvents(): ScriptCommand[] {
+        return [...this._scriptCommandsById.values()];
     }
 }
 
-export class ScriptEventCommand extends EventEmitter<ScriptEventEvents> {
+export class ScriptCommand extends EventEmitter<ScriptCommandEvents> {
     readonly id: string;
 
     constructor(id: string) {
@@ -50,11 +50,11 @@ export interface ScriptCommandEvent {
     sourceType: mc.ScriptEventSource,
 }
 
-export type ScriptEventEvents = {
+export type ScriptCommandEvents = {
     run: (event: ScriptCommandEvent) => void
 }
 
-export const scriptEventManager = new ScriptEventManager();
+export const scriptEventManager = new ScriptCommandManager();
 
 mc.system.afterEvents.scriptEventReceive.subscribe((event) => {
     const { id, message, sourceEntity, sourceBlock, initiator, sourceType } = event;
