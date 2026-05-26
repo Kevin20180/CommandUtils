@@ -228,3 +228,13 @@ export function propertiesToString(object: Record<string, any>, indent: number =
     }// catch {}
     return msg;
 }
+
+export function giveItem(player: mc.Player, item: mc.ItemStack) {
+    const inv = player.getComponent("inventory")!.container!;
+    const res = inv.addItem(item);
+    if(res) {
+        player.dimension.spawnItem(res, player.location);
+    }
+    
+    player.playSound("random.pop");
+}
