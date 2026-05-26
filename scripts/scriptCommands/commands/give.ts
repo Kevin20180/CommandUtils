@@ -9,7 +9,13 @@ export interface GiveCommandData {
 	lock_mode?: "inventory" | "slot",
 	can_place_on?: string[],
 	can_destroy?: string[],
-	lore?: string[]
+	lore?: string[],
+	enchantments?: EnchantmentData[]
+}
+
+export interface EnchantmentData {
+    id: string,
+    level?: number
 }
 
 export const giveCommandParser = new JsonParser<mc.ItemStack>('give_command_parser', (data) => {
@@ -23,6 +29,7 @@ export const giveCommandParser = new JsonParser<mc.ItemStack>('give_command_pars
 	if(data.can_place_on != undefined && !Array.isArray(data.can_place_on)) throw TypeError("Propriedade 'can_place_on' deve ser string[]?.");
 	if(data.can_destroy != undefined && !Array.isArray(data.can_destroy)) throw TypeError("Propriedade 'can_destroy' deve ser string[]?.");
 	if(data.lore != undefined && !Array.isArray(data.lore)) throw TypeError("Propriedade 'lore' deve ser string[]?.");
+	if(data.enchantments != undefined && !Array.isArray(data.enchantments)) throw TypeError("Propriedade 'enchantments' deve ser um objeto EnchantmentData[].");
 
 	if(data.can_place_on) {
 		for(let i in data.can_place_on) {
@@ -48,6 +55,34 @@ export const giveCommandParser = new JsonParser<mc.ItemStack>('give_command_pars
 	}
 
 	const item = new mc.ItemStack(data.id, data.amount || 1);
+
+	if(data.enchantments) {
+		const enchantComp = item.getComponent('enchantable');
+		if(!enchantComp) throw Error('O item não pode ser encantado.');
+
+		for(let i in data.enchantments) {
+			const enc = data.enchantments[i]!;
+			if(typeof enc !== 'object' || enc === null) throw TypeError(`Propriedade 'enchantments[${i}]' deve ser um objeto EnchantmentData.`);
+			if(typeof enc.id !== "string") throw TypeError(`Propriedade 'enchantments[${i}].id' deve ser string.`);
+			if(enc.level != undefined && typeof enc.level !== "number") throw TypeError(`Propriedade 'enchantments[${i}].level' deve ser number.`);
+			
+			let encType;
+			try {
+				encType = new mc.EnchantmentType(enc.id);
+			} catch {
+				throw Error(`Encantamento inexistente em 'enchantments[${i}].id'.`);
+			}
+
+			try {
+				enchantComp.addEnchantment({
+					type: encType,
+					level: enc.level || 1
+				})
+			} catch {
+				throw Error(`Não foi possível adicionar o encantamento 'enchantments[${i}]'.`);
+			}
+		}
+	}
 
 	if(data.name) item.nameTag = data.name;
 	if(data.lock_mode) item.lockMode = data.lock_mode === "inventory" ? mc.ItemLockMode.inventory : mc.ItemLockMode.slot;
