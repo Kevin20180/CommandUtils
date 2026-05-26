@@ -3,9 +3,9 @@ import { cacheManager } from "./cacheManager";
 
 export class JsonParser<T = any> {
 	readonly id: string;
-	readonly parserFn: (data: Record<string, any>) => T;
+	readonly parserFn: (data: JsonDataTypes) => T;
 
-	constructor(id: string, parserFn: (data: Record<string, any>) => T) {
+	constructor(id: string, parserFn: (data: JsonDataTypes) => T) {
 		this.id = id;
 		this.parserFn = parserFn;
 	}
@@ -19,7 +19,7 @@ export class JsonParser<T = any> {
 			else return cachedData.data;
 		}
 
-		let data: Record<string, any>;
+		let data: JsonDataTypes;
 		try {
 			data = JSON.parse(rawData);
 		} catch(e) {
@@ -37,3 +37,10 @@ export class JsonParser<T = any> {
 		}
 	}
 }
+
+export type JsonDataTypes =
+  | string
+  | number
+  | boolean
+  | null
+  | Record<string, any>
